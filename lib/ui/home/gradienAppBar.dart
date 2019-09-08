@@ -42,3 +42,4 @@ class GradientAppBar extends StatelessWidget {
     );
   }
 }
+
