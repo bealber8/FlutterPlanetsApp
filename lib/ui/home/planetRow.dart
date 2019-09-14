@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:planetsapp/model/planets.dart';
+import 'package:planetsapp/ui/detail/detailPage.dart';
 
 class PlanetRow extends StatelessWidget {
 
@@ -14,10 +15,13 @@ class PlanetRow extends StatelessWidget {
         vertical: 16.0
       ),
       alignment: FractionalOffset.centerLeft,
-      child: new Image(
+      child: new Hero(
+        tag: "planet-hero-${planet.id}",
+        child: new Image(
         image: new AssetImage(planet.image),
         height: 92.0,
         width: 92.0,
+        ),
       ),
     );
   
@@ -112,17 +116,23 @@ class PlanetRow extends StatelessWidget {
 
   // @override
   // Widget build(BuildContext context) {
-    return new Container(
-      margin: const EdgeInsets.symmetric( 
-        vertical: 16.0,
-        horizontal: 24.0,
-      ), // permite especificar arriba/abajo e izq/der con un solo valor
-      child: new Stack(
-        children: <Widget>[
-          planetCard,
-          planetThumbnail,
-        ] //coloca los elementos uno encima del otro en el eje z
-      ),
+    return new GestureDetector(
+      onTap: () => Navigator.of(context).push(new PageRouteBuilder(
+        pageBuilder: (_, __, ___) => new DetailPage(planet),
+      )),
+      child: new Container(
+        height: 120.0,
+        margin: const EdgeInsets.symmetric( 
+          vertical: 16.0,
+          horizontal: 24.0,
+        ), // permite especificar arriba/abajo e izq/der con un solo valor
+        child: new Stack(
+          children: <Widget>[
+            planetCard,
+            planetThumbnail,
+          ] //coloca los elementos uno encima del otro en el eje z
+        ),
+      )
     );
   }
 }
