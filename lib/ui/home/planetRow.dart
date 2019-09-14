@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:planetsapp/model/planets.dart';
 import 'package:planetsapp/ui/detail/detailPage.dart';
 
-class PlanetRow extends StatelessWidget {
+class PlanetSummary extends StatelessWidget {
 
   final Planet planet;
+  final bool horizontal;
 
-  PlanetRow(this.planet);
+  PlanetSummary(this.planet, {this.horizontal = true});
 
+  PlanetSummary.vertical(this.planet): horizontal = false;
+  
   @override
   Widget build(BuildContext context) {
     final planetThumbnail = new Container(
       margin: new EdgeInsets.symmetric(
         vertical: 16.0
       ),
-      alignment: FractionalOffset.centerLeft,
+      alignment: horizontal ? FractionalOffset.centerLeft : FractionalOffset.center,
       child: new Hero(
         tag: "planet-hero-${planet.id}",
         child: new Image(
@@ -47,20 +50,22 @@ class PlanetRow extends StatelessWidget {
   );
 
   Widget _planetValue({String value, String image}){
-    return new Row(
-      children: <Widget>[
-        new Image.asset(image, height: 12.0),
-        new Container(width: 8.0),
-        new Text(value, style: regularTextStyle,),
-      ],
+    return new Container(
+      child: new Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          new Image.asset(image, height: 12.0),
+          new Container(width: 8.0),
+          new Text(value, style: regularTextStyle),
+        ],)
     );
   }
 
   final planetCardContent = new Container(
-    margin: new EdgeInsets.fromLTRB(76.0, 16.0, 16.0, 16.0),
+    margin: new EdgeInsets.fromLTRB(horizontal ? 76.0 : 16.0, horizontal ?  16.0 : 42.0, 16.0, 16.0),
     constraints: new BoxConstraints.expand(),
     child: new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: horizontal ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: <Widget>[
         new Container(height: 4.0),
         new Text(planet.name,
@@ -77,14 +82,20 @@ class PlanetRow extends StatelessWidget {
           color: new Color(0xff00c6ff)
         ),
         new Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             new Expanded(
+              flex: horizontal ? 1 : 0,
               child: _planetValue(
                 value: planet.distance,
                 image: 'assets/img/ic_distance.png'
               )
             ),
+            new Container(
+              width: 32.0,
+            ),
             new Expanded(
+              flex: horizontal ? 1 : 0,
               child: _planetValue(
                 value: planet.gravity,
                 image: 'assets/img/ic_gravity.png'
@@ -98,8 +109,10 @@ class PlanetRow extends StatelessWidget {
 
   final planetCard = new Container(
     child: planetCardContent,
-    height: 124.0,
-    margin: new EdgeInsets.only(left:46.0),
+    height: horizontal ? 124.0 : 154.0,
+    margin: horizontal
+      ? new EdgeInsets.only(left: 46.0)
+      : new EdgeInsets.only(top: 72.0),
     decoration: new BoxDecoration(
       color: new Color(0xFF333366),
       shape: BoxShape.rectangle,
@@ -117,11 +130,15 @@ class PlanetRow extends StatelessWidget {
   // @override
   // Widget build(BuildContext context) {
     return new GestureDetector(
-      onTap: () => Navigator.of(context).push(new PageRouteBuilder(
-        pageBuilder: (_, __, ___) => new DetailPage(planet),
-      )),
+      onTap: horizontal
+        ? () => Navigator.of(context).push(
+          new PageRouteBuilder(
+            pageBuilder: (_, __, ___) => new DetailPage(planet),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              new FadeTransition(opacity: animation, child: child),
+      ),) : null,
       child: new Container(
-        height: 120.0,
+        //height: 120.0,
         margin: const EdgeInsets.symmetric( 
           vertical: 16.0,
           horizontal: 24.0,
